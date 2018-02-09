@@ -29,19 +29,17 @@ namespace Graphics
 	    {
 			_sw = Stopwatch.StartNew();
 
-		    _graphicManager = new GraphicManager(0, 0, _width, _height, _renderer);
-
 		    _cmap = new CollisionMap(_width, _height);
+		    var cave = new Cave(_width, _height, _cmap);
 
 		    var player = new Player
 		    {
-			    X = (short)3,
-			    Y = (short)(_height / 2)
+			    X = 3,
+			    Y = _height / 2
 		    };
 
-		    var cave = new Cave((short)_width, (short)_height, _cmap);
-
-		    _graphicManager.AddGraphic(player);
+		    _graphicManager = new GraphicManager(0, 0, _width, _height, _renderer);
+			_graphicManager.AddGraphic(player);
 		    _graphicManager.AddGraphic(cave);
 
 		    // Keybindings
@@ -105,14 +103,17 @@ namespace Graphics
 					_inputHandler.HandleInput();
 					_graphicManager.Fill();
 
-					//for (var i = 0; i < _width; i++)
+					//_graphicManager.ApplyFilter(surface =>
 					//{
-					//	for (var j = 0; j < _height; j++)
+					//	for (var i = 0; i < _width - 1; ++i)
 					//	{
-					//		if (_cmap.Map[i][j] == false)
-					//			_graphicManager._surface[i + j * _width].Attributes = 16;
+					//		for (var j = 0; j < _height - 1; ++j)
+					//		{
+					//			if (_cmap.Map[i][j] == false)
+					//				surface[i + j * (_width - 1)].Attributes = 16;
+					//		}
 					//	}
-					//}
+					//});
 					
 					_graphicManager.Render(_renderer);
 					_sw.Restart();

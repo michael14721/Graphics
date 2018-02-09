@@ -19,8 +19,7 @@ namespace Graphics
 
 		    if (r.FileHandleIsValid())
 		    {
-				var game = new Game(width, height, fps, r);
-				game.Run();
+				new Game(width, height, fps, r).Run();
 		    }
 
 		    Console.ReadKey();

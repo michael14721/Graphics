@@ -6,7 +6,7 @@
 		private readonly CaveGenerator _generator;
 		private readonly ConsoleApi.CharInfo[] _graphic;
 
-		public Cave(short width, short height, CollisionMap cmap)
+		public Cave(int width, int height, CollisionMap cmap)
 		{
 			_cmap = cmap;
 			Width = width;
@@ -34,16 +34,18 @@
 				_graphic[i].Char.AsciiChar = (byte)'#';
 			}
 
-			for (var i = caveX; i < Width - 1; ++i)
+			for (var i = 0; i < Width - 1; ++i)
 			{
 				var line = _generator.GenerateLine();
 
-				for (var j = 0; j < Height; ++j)
+				//if (i > caveX)
+				for (var j = 0; j < Height - 1; ++j)
 				{
-					if (j >= line.StartPosition + Height / 4 && j <= line.EndPosition + Height / 4)
+					if (j >= line.StartPosition + Height / 4
+						&& j <= line.EndPosition + Height / 4)
 					{
-						_graphic[i + (Width - 1) * j].Attributes = 1;
-						_graphic[i + (Width - 1) * j].Char.AsciiChar = (byte)'.';
+						_graphic[i + Width * j].Attributes = 1;
+						_graphic[i + Width * j].Char.AsciiChar = (byte)'.';
 						cmap.SetFree(i, j);
 					}
 				}
@@ -58,19 +60,19 @@
 
 			for (var j = 0; j < Height; ++j)
 			{
-				var pos = RenderGraphicPosition + (Width - 1) * j;
+				var pos = RenderGraphicPosition + Width * j;
 
 				if (j >= line.StartPosition + Height / 4 && j <= line.EndPosition + Height / 4)
 				{
 					_graphic[pos].Attributes = 2;
 					_graphic[pos].Char.AsciiChar = (byte)'.';
-					_cmap.SetFree(Width, j);
+					_cmap.SetFree(Width - 1, j);
 				}
 				else
 				{
 					_graphic[pos].Attributes = 16;
 					_graphic[pos].Char.AsciiChar = (byte)'#';
-					_cmap.SetSolid(Width, j);
+					_cmap.SetSolid(Width - 1, j);
 				}
 			}
 

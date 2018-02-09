@@ -15,13 +15,15 @@ namespace Graphics
 
 		public bool DrawRect(ConsoleApi.CharInfo[] content, int x, int y, int width, int height)
 		{
-			var xx = (short) x;
-			var yy = (short) y;
-			var w = (short) (width - 1);
-			var h = (short) (height - 1);
-				
-			var rec = new ConsoleApi.SmallRect { Left = xx, Top = yy, Right = xx += w, Bottom = yy += h };
-			return ConsoleApi.WriteConsoleOutput(_h, content, new ConsoleApi.Coord(xx, yy), new ConsoleApi.Coord(0, 0), ref rec);
+			var rec = new ConsoleApi.SmallRect
+			{
+				Left = (short) x,
+				Top = (short) y,
+				Right = (short) (x + width),
+				Bottom = (short) (y + height)
+			};
+
+			return ConsoleApi.WriteConsoleOutput(_h, content, new ConsoleApi.Coord((short) width, (short) height), new ConsoleApi.Coord(0, 0), ref rec);
 		}
 		
 		public bool FileHandleIsValid()

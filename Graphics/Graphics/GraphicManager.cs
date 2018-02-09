@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Graphics
 {
 	internal class GraphicManager
 	{
-		private readonly int _x;
-		private readonly int _y;
-		private readonly int _width;
 		private readonly int _height;
 		private readonly Renderer _renderer;
-		public readonly ConsoleApi.CharInfo[] _surface;
+		private readonly ConsoleApi.CharInfo[] _surface;
+		private readonly int _width;
+		private readonly int _x;
+		private readonly int _y;
 		private List<GameObject> _objects;
 
 		public GraphicManager(int x, int y, int width, int height, Renderer renderer)
@@ -40,24 +41,24 @@ namespace Graphics
 			_objects.Remove(obj);
 		}
 
+		public void ApplyFilter(Action<ConsoleApi.CharInfo[]> filter)
+		{
+			filter.Invoke(_surface);
+		}
+
 		public void Fill()
 		{
 			foreach (var t in _objects)
 			{
-				var c = t.X + (_width - 1) * t.Y;
+				var c = t.X + _width * t.Y;
 
 				for (var i = 0; i < t.Graphic.Length; ++i)
 				{
-					var tposy = _width * (i / t.Width);
-					var tposx = i - t.RenderGraphicPosition + _width;
-					//var tposx = i + (_width - t.RenderGraphicPosition) % _width;
-
-					if ((t.X + (i % t.Width)) > _width)
-						tposy -= _width;
-
-					tposx %= _width;
+					var fromx = (i + t.RenderGraphicPosition) % t.Width;
+					var destx = i % t.Width;
+					var desty = _width * (i / t.Width);
 					
-					_surface[c + tposx + tposy] = t.Graphic[i];
+					_surface[c + destx + desty] = t.Graphic[fromx + desty];
 				}
 			}
 		}

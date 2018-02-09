@@ -8,13 +8,13 @@ namespace Graphics
 
 		public int Depth { get; set; } = 0;
 
-		public short X { get; set; } = 0;
+		public int X { get; set; } = 0;
 
-		public short Y { get; set; } = 0;
+		public int Y { get; set; } = 0;
 
-		public short Width { get; set; } = 0;
+		public int Width { get; set; } = 0;
 
-		public short Height { get; set; } = 0;
+		public int Height { get; set; } = 0;
 
 		public ConsoleApi.CharInfo[] Graphic { get; set; }
 

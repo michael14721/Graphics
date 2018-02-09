@@ -7,18 +7,18 @@ namespace Graphics
 		private readonly int _width;
 		private readonly int _height;
 
-		public List<List<bool>> Map { get; }
+		public List<List<bool>> Map { get; protected set; }
 
 		public CollisionMap(int width, int height)
 		{
 			_width = width;
 			_height = height;
 
-			Map = new List<List<bool>>(_width + 1);
+			Map = new List<List<bool>>(_width);
 
-			for (var i = 0; i < _width + 1; ++i)
+			for (var i = 0; i < _width; i++)
 			{
-				Map.Add(new List<bool>(new bool[_height + 1]));
+				Map.Add(new List<bool>(new bool[_height]));
 			}
 		}
 
@@ -49,7 +49,7 @@ namespace Graphics
 		
 		private bool InsideBoundaries(int x, int y)
 		{
-			return !(x < 0 || y < 0 || x > _width || y > _height);
+			return (x < 0 || y < 0 || x > _width - 1 || y > _height - 1) == false;
 		}
 	}
 }
