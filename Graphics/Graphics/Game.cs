@@ -31,6 +31,18 @@ namespace Graphics
 
 		    _cmap = new CollisionMap(_width, _height);
 		    var cave = new Cave(_width, _height, _cmap);
+		    var msgBox = new MessageBox
+		    {
+				Depth = -90,
+			    X = 2,
+			    Y = _height - 9,
+				Width = _width - 4,
+				Height = 7,
+			};
+
+			msgBox.SetText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+
+			msgBox.Resize();
 
 		    var player = new Player
 		    {
@@ -41,9 +53,10 @@ namespace Graphics
 		    _graphicManager = new GraphicManager(0, 0, _width, _height, _renderer);
 			_graphicManager.AddGraphic(player);
 		    _graphicManager.AddGraphic(cave);
+		    _graphicManager.AddGraphic(msgBox);
 
-		    // Keybindings
-		    _inputHandler = new InputHandler();
+			// Keybindings
+			_inputHandler = new InputHandler();
 
 		    _inputHandler.AddHandler(ConsoleKey.Escape, () => Environment.Exit(0));
 
@@ -79,16 +92,9 @@ namespace Graphics
 			    }
 		    });
 
-		    _inputHandler.AddHandler(ConsoleKey.NumPad1, () =>
+		    _inputHandler.AddHandler(ConsoleKey.J, () =>
 		    {
-				_cmap.ShiftLeft();
-				cave.ExpandOne();
-		    });
-
-		    _inputHandler.AddHandler(ConsoleKey.NumPad2, () =>
-		    {
-				player.RenderGraphicPosition = (player.RenderGraphicPosition + 1) % _width;
-			    cave.RenderGraphicPosition = (cave.RenderGraphicPosition + 1) % _width;
+				msgBox.Go();
 		    });
 
 			_graphicManager.UpdateDepth();
@@ -103,17 +109,17 @@ namespace Graphics
 					_inputHandler.HandleInput();
 					_graphicManager.Fill();
 
-					_graphicManager.ApplyFilter(surface =>
-					{
-						for (var i = 0; i < _width; ++i)
-						{
-							for (var j = 0; j < _height; ++j)
-							{
-								if (_cmap.Map[i][j] == false)
-									surface[i + j * _width].Attributes += 1;
-							}
-						}
-					});
+					//_graphicManager.ApplyFilter(surface =>
+					//{
+					//	for (var i = 0; i < _width; ++i)
+					//	{
+					//		for (var j = 0; j < _height; ++j)
+					//		{
+					//			if (_cmap.Map[i][j] == false)
+					//				surface.At(i, j).Attributes = 10;
+					//		}
+					//	}
+					//});
 
 					_graphicManager.Render(_renderer);
 					_sw.Restart();

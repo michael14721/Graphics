@@ -8,7 +8,7 @@ namespace Graphics
 	{
 		private readonly int _height;
 		private readonly Renderer _renderer;
-		private readonly ConsoleApi.CharInfo[] _surface;
+		private readonly Graphic _surface;
 		private readonly int _width;
 		private readonly int _x;
 		private readonly int _y;
@@ -23,7 +23,7 @@ namespace Graphics
 			_renderer = renderer;
 
 			_objects = new List<GameObject>();
-			_surface = new ConsoleApi.CharInfo[_width * _height];
+			_surface = new Graphic(_width, _height);
 		}
 
 		public void UpdateDepth()
@@ -41,34 +41,39 @@ namespace Graphics
 			_objects.Remove(obj);
 		}
 
-		public void ApplyFilter(Action<ConsoleApi.CharInfo[]> filter)
+		public void ApplyFilter(Action<Graphic> filter)
 		{
 			filter.Invoke(_surface);
 		}
 
 		public void Fill()
 		{
-			foreach (var t in _objects)
+			foreach (var o in _objects)
 			{
-				var c = t.X + _width * t.Y;
+				if (o.Visible == false)
+					continue;
 
-				for (var i = 0; i < t.Graphic.Length; ++i)
+				o.Step();
+				
+				for (var x = 0; x < o.Graphic.Width; ++x)
 				{
-					var fromx = (i + t.RenderGraphicPosition) % t.Width;
-					var destx = i % t.Width;
-					var desty = _width * (i / t.Width);
+					for (var y = 0; y < o.Graphic.Height; ++y)
+					{
+						var tx = o.X + x;
+						var ty = o.Y + y;
 
-					if (t.X + destx > _width - 1 || t.Y + (i / t.Width) > _height - 1)
-						continue;
+						if (tx < 0 || tx > _width - 1 || ty < 0 || ty > _height - 1)
+							continue;
 
-					_surface[c + destx + desty] = t.Graphic[fromx + desty];
+						_surface.At(tx, ty) = o.Graphic.At((x + o.RenderGraphicPosition) % o.Width, y);
+					}
 				}
 			}
 		}
 
 		public void Render(Renderer r)
 		{
-			_renderer.DrawRect(_surface, _x, _y, _width, _height);
+			_renderer.DrawRect(_surface.Surface, _x, _y, _width, _height);
 		}
 	}
 }

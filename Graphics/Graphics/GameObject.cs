@@ -16,8 +16,12 @@ namespace Graphics
 
 		public int Height { get; set; } = 0;
 
-		public ConsoleApi.CharInfo[] Graphic { get; set; }
+		public bool Visible { get; set; } = true;
+
+		public Graphic Graphic { get; set; }
 
 		public int RenderGraphicPosition { get; set; } = 0;
+
+		public virtual void Step() { }
 	}
 }

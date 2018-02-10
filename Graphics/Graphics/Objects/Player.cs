@@ -8,9 +8,9 @@
 			Width = 1;
 			Height = 1;
 
-			var sprite = new ConsoleApi.CharInfo[1];
-			sprite[0].Attributes = 11;
-			sprite[0].Char.AsciiChar = (byte)'A';
+			var sprite = new Graphic(1, 1);
+			sprite.Surface[0].Attributes = 11;
+			sprite.Surface[0].Char.UnicodeChar = 'A';
 			Graphic = sprite;
 		}
 	}
