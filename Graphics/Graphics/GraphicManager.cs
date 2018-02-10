@@ -57,7 +57,10 @@ namespace Graphics
 					var fromx = (i + t.RenderGraphicPosition) % t.Width;
 					var destx = i % t.Width;
 					var desty = _width * (i / t.Width);
-					
+
+					if (t.X + destx > _width - 1 || t.Y + (i / t.Width) > _height - 1)
+						continue;
+
 					_surface[c + destx + desty] = t.Graphic[fromx + desty];
 				}
 			}

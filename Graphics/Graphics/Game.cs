@@ -103,18 +103,18 @@ namespace Graphics
 					_inputHandler.HandleInput();
 					_graphicManager.Fill();
 
-					//_graphicManager.ApplyFilter(surface =>
-					//{
-					//	for (var i = 0; i < _width - 1; ++i)
-					//	{
-					//		for (var j = 0; j < _height - 1; ++j)
-					//		{
-					//			if (_cmap.Map[i][j] == false)
-					//				surface[i + j * (_width - 1)].Attributes = 16;
-					//		}
-					//	}
-					//});
-					
+					_graphicManager.ApplyFilter(surface =>
+					{
+						for (var i = 0; i < _width; ++i)
+						{
+							for (var j = 0; j < _height; ++j)
+							{
+								if (_cmap.Map[i][j] == false)
+									surface[i + j * _width].Attributes += 1;
+							}
+						}
+					});
+
 					_graphicManager.Render(_renderer);
 					_sw.Restart();
 				}
