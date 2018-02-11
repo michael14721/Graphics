@@ -5,14 +5,17 @@ namespace Graphics.Objects
 {
     internal class MessageBox : GameObject
     {
-	    private int _pos;
-	    private int _word;
-	    private int _renderPos;
-	    private int _nextArrowState;
-		private string[] _message;
+	    private int _word;								// Current word to be read
+	    private int _pos;								// Position inside current word
+	    private int _renderPos;							// Position inside Graphic to render the next letter
+	    private int _nextArrowState;					// 1 or 0 depending on which state the 'next-arrow' is in (right or left)
+		private string[] _message;						// The message to show
+	    private readonly int _offset;					// Offset from borders of graphic
 
-	    private readonly int _offset;
-	    private readonly short _color;
+	    private const short TextColor = 15;				// Color of the text
+	    private const short MsgBoxColor = 5;			// Color of the messagebox
+	    private const char WaitForInputChar = '\n';		// A character in the message which tells the message box to put no more text in the current screen. Has to be surrounded by spaces.
+
 	    private readonly TimeSpan _writeDelay;
 	    private readonly TimeSpan _nextArrowDelay;
 	    private readonly Stopwatch _writeTimer;
@@ -20,14 +23,13 @@ namespace Graphics.Objects
 
 	    public MessageBox()
 	    {
-		    _color = 5;
 		    _pos = 0;
 		    _word = 0;
 		    _renderPos = 0;
 		    _nextArrowState = 0;
 		    _offset = 2;
 
-		    _nextArrowDelay = TimeSpan.FromMilliseconds(300);
+			_nextArrowDelay = TimeSpan.FromMilliseconds(300);
 			_nextArrowTimer = new Stopwatch();
 
 			_writeDelay = TimeSpan.FromMilliseconds(5);
@@ -44,18 +46,25 @@ namespace Graphics.Objects
 
 	    public override void Step()
 	    {
-			if (_writeTimer.Elapsed >= _writeDelay &&_pos < _message[_word].Length)
+			if (_writeTimer.Elapsed >= _writeDelay && _word < _message.Length && _pos < _message[_word].Length)
 			{
-				Graphic.At(_renderPos + _offset, _offset).Attributes = 15;
+				if (_message[_word][0] == WaitForInputChar)
+				{
+					WaitForInput();
+					return;
+				}
+				
+				Graphic.At(_renderPos + _offset, _offset).Attributes = TextColor;
 				Graphic.At(_renderPos + _offset, _offset).Char.UnicodeChar = _message[_word][_pos];
-
+				
 				++_pos;
 				++_renderPos;
-
+				
 				// End of word
 				if (_pos >= _message[_word].Length)
 				{
 					++_word;
+					_pos = 0;
 
 					// End of text
 					if (_word >= _message.Length)
@@ -71,29 +80,29 @@ namespace Graphics.Objects
 						}
 						else
 						{
+							// Add space between words
 							++_renderPos;
 						}
 
-						// Limit lines
+						// Check if line limit has been reached before rendering next letter
 						if (_renderPos / Width > 2)
 						{
-							_writeTimer.Reset();
-							_nextArrowTimer.Start();
+							WaitForInput();
 						}
 						else
 						{
-							_pos = 0;
 							_writeTimer.Restart();
 						}
 					}
 				}
 			}
 
+			// Animate the 'next-arrow'
 		    if (_nextArrowTimer.Elapsed >= _nextArrowDelay)
 		    {
 			    _nextArrowState = _nextArrowState == 1 ? 0 : 1;
 			    
-				Graphic.At(Width - _offset + _nextArrowState - 2, Height - _offset).Attributes = 15;
+				Graphic.At(Width - _offset + _nextArrowState - 2, Height - _offset).Attributes = TextColor;
 			    Graphic.At(Width - _offset + _nextArrowState - 2, Height - _offset).Char.AsciiChar = 175;
 			    Graphic.At(Width - _offset + (1 - _nextArrowState) - 2, Height - _offset).Attributes = 0;
 
@@ -103,27 +112,43 @@ namespace Graphics.Objects
 
 	    public void Go()
 	    {
+			// Already writing to screen
 		    if (_writeTimer.IsRunning)
 			    return;
 
+		    // Disappear when end of text is reached
 		    if (_word >= _message.Length)
 		    {
 			    Visible = false;
-			    return;
+			    Stop();
+				return;
 		    }
 
-		    _pos = 0;
-		    _renderPos = 0;
-
+			// Skip the current escape character because it already has proc'd
+		    if (_message[_word][0] == WaitForInputChar)
+		    {
+			    ++_word;
+			    _pos = 0;
+		    }
+			
+			_renderPos = 0;
+			
 		    Clean();
 
-			_writeTimer.Start();
+			_writeTimer.Restart();
 			_nextArrowTimer.Reset();
 	    }
 
-	    public void SetText(string text)
+	    private void WaitForInput()
 	    {
-		    _message = text.Split(' ');
+			_writeTimer.Reset();
+		    _nextArrowTimer.Start();
+	    }
+
+		public void SetText(string text)
+	    {
+		    _message = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
 	    }
 
 	    public void Restart()
@@ -144,14 +169,14 @@ namespace Graphics.Objects
 		    {
 				for (var y = 0; y < Graphic.Height; ++y)
 				{
-					Graphic.At(x, y).Attributes = _color;
-
 					if (x == 0 || x == Width - 1)
 					{
+						Graphic.At(x, y).Attributes = MsgBoxColor;
 						Graphic.At(x, y).Char.UnicodeChar = '|';
 					}
 					else if (y == 0 || y == Height - 1)
 					{
+						Graphic.At(x, y).Attributes = MsgBoxColor;
 						Graphic.At(x, y).Char.UnicodeChar = '-';
 					}
 					else
@@ -166,5 +191,11 @@ namespace Graphics.Objects
 		    Graphic.At(Width - 1, 0).Char.UnicodeChar = '+';
 		    Graphic.At(Width - 1, Height - 1).Char.UnicodeChar = '+';
 		}
+
+	    private void Stop()
+	    {
+		    _writeTimer.Reset();
+			_nextArrowTimer.Reset();
+	    }
     }
 }

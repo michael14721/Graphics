@@ -13,7 +13,7 @@
 			Height = height;
 			
 			_generator = new CaveGenerator(
-				caveStart: Height / 4,
+				caveStart: Height / 2,
 				caveMinWidth: 3,
 				caveMaxWidth: Height,
 				caveRoughness: 50,
@@ -38,8 +38,8 @@
 
 					for (var j = 0; j < Height; ++j)
 					{
-						if (j >= line.StartPosition + Height / 4
-							&& j <= line.EndPosition + Height / 4)
+						if (j >= line.StartPosition
+							&& j <= line.EndPosition)
 						{
 							_graphic.At(i, j).Attributes = 1;
 							_graphic.At(i, j).Char.UnicodeChar = '.';
@@ -58,7 +58,7 @@
 
 			for (var j = 0; j < Height; ++j)
 			{
-				if (j >= line.StartPosition + Height / 4 && j <= line.EndPosition + Height / 4)
+				if (j >= line.StartPosition && j <= line.EndPosition)
 				{
 					_graphic.At(RenderGraphicPosition, j).Attributes = 1;
 					_graphic.At(RenderGraphicPosition, j).Char.UnicodeChar = '.';

@@ -23,16 +23,14 @@ namespace Graphics
 			
 			_caveW = caveMinWidth;
 
-			_rng = new Random((int)DateTime.Now.Ticks);
+			_rng = new Random();
 		}
 
 	    public CaveLine GenerateLine()
 	    {
-			var line = new CaveLine();
-
 		    if (_rng.Next(0, 100) <= _caveWind)
 		    {
-			    _caveStart += _rng.Next(-2, 2);
+			    _caveStart += _rng.Next(-20, 20) / 10;
 
 			    if (_caveStart < 0)
 				    _caveStart = 0;
@@ -40,24 +38,24 @@ namespace Graphics
 					_caveStart = _caveMaxWidth - _caveMinWidth;
 
 		    }
-
-			line.StartPosition = _caveStart;
-
+			
 		    if (_rng.Next(0, 100) <= _caveRough)
 		    {
-			    _caveW += _rng.Next(-2, 2);
+			    _caveW += _rng.Next(-20, 20) / 10;
 
 			    if (_caveW < _caveMinWidth)
 				    _caveW = _caveMinWidth;
-			    if (_caveW > _caveMaxWidth - line.StartPosition)
-				    _caveW = _caveMaxWidth - line.StartPosition;
+			    if (_caveW > _caveMaxWidth - _caveStart)
+				    _caveW = _caveMaxWidth - _caveStart;
 
 		    }
-
-		    line.EndPosition = line.StartPosition + _caveW;
-
-			return line;
-	    }
+			
+		    return new CaveLine
+		    {
+			    StartPosition = _caveStart,
+			    EndPosition = _caveStart + _caveW
+		    };
+		}
 
 	    public class CaveLine
 	    {
