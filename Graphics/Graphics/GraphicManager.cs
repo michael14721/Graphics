@@ -54,19 +54,17 @@ namespace Graphics
 					continue;
 
 				o.Step();
-				
+
 				for (var x = 0; x < o.Graphic.Width; ++x)
+				for (var y = 0; y < o.Graphic.Height; ++y)
 				{
-					for (var y = 0; y < o.Graphic.Height; ++y)
-					{
-						var tx = o.X + x;
-						var ty = o.Y + y;
+					var tx = o.X + x;
+					var ty = o.Y + y;
 
-						if (tx < 0 || tx > _width - 1 || ty < 0 || ty > _height - 1)
-							continue;
+					if (tx < 0 || tx > _width - 1 || ty < 0 || ty > _height - 1)
+						continue;
 
-						_surface.At(tx, ty) = o.Graphic.At((x + o.RenderGraphicPosition) % o.Width, y);
-					}
+					_surface.At(tx, ty) = o.Graphic.At((x + o.RenderGraphicPosition) % o.Width, y);
 				}
 			}
 		}

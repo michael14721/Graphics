@@ -36,7 +36,7 @@ namespace Graphics
 				X = x;
 				Y = y;
 			}
-		};
+		}
 
 		[StructLayout(LayoutKind.Explicit)]
 		internal struct CharUnion

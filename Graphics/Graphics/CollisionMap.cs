@@ -4,10 +4,8 @@ namespace Graphics
 {
 	internal class CollisionMap
 	{
-		private readonly int _width;
 		private readonly int _height;
-
-		public List<List<bool>> Map { get; protected set; }
+		private readonly int _width;
 
 		public CollisionMap(int width, int height)
 		{
@@ -17,10 +15,10 @@ namespace Graphics
 			Map = new List<List<bool>>(_width);
 
 			for (var i = 0; i < _width; i++)
-			{
 				Map.Add(new List<bool>(new bool[_height]));
-			}
 		}
+
+		public List<List<bool>> Map { get; }
 
 		public void SetFree(int x, int y)
 		{
@@ -46,7 +44,7 @@ namespace Graphics
 			Map.RemoveAt(0);
 			Map.Add(new List<bool>(new bool[_height + 1]));
 		}
-		
+
 		private bool InsideBoundaries(int x, int y)
 		{
 			return (x < 0 || y < 0 || x > _width - 1 || y > _height - 1) == false;

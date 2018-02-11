@@ -22,6 +22,8 @@ namespace Graphics
 
 		public int RenderGraphicPosition { get; set; } = 0;
 
-		public virtual void Step() { }
+		public virtual void Step()
+		{
+		}
 	}
 }

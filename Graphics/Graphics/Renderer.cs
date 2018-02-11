@@ -23,9 +23,14 @@ namespace Graphics
 				Bottom = (short) (y + height)
 			};
 
-			return ConsoleApi.WriteConsoleOutput(_h, content, new ConsoleApi.Coord((short) width, (short) height), new ConsoleApi.Coord(0, 0), ref rec);
+			return ConsoleApi.WriteConsoleOutput(
+				_h,
+				content,
+				new ConsoleApi.Coord((short) width, (short) height),
+				new ConsoleApi.Coord(0, 0), ref rec
+			);
 		}
-		
+
 		public bool FileHandleIsValid()
 		{
 			return !_h.IsInvalid;
