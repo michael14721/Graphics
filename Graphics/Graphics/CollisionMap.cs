@@ -42,7 +42,7 @@ namespace Graphics
 		public void ShiftLeft()
 		{
 			Map.RemoveAt(0);
-			Map.Add(new List<bool>(new bool[_height + 1]));
+			Map.Add(new List<bool>(new bool[_height]));
 		}
 
 		private bool InsideBoundaries(int x, int y)

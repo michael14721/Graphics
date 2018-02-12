@@ -55,8 +55,7 @@ namespace Graphics.Objects
 					return;
 				}
 
-				Graphic.At(_renderPos + _offset, _offset).Attributes = TextColor;
-				Graphic.At(_renderPos + _offset, _offset).Char.UnicodeChar = _message[_word][_pos];
+				Graphic.Set(_renderPos + _offset, _offset, TextColor, _message[_word][_pos]);
 
 				++_pos;
 				++_renderPos;
@@ -94,8 +93,7 @@ namespace Graphics.Objects
 			{
 				_nextArrowState = _nextArrowState == 1 ? 0 : 1;
 
-				Graphic.At(Width - _offset + _nextArrowState - 2, Height - _offset).Attributes = TextColor;
-				Graphic.At(Width - _offset + _nextArrowState - 2, Height - _offset).Char.AsciiChar = 175;
+				Graphic.Set(Width - _offset + _nextArrowState - 2, Height - _offset, TextColor, 175);
 				Graphic.At(Width - _offset + (1 - _nextArrowState) - 2, Height - _offset).Attributes = 0;
 
 				_nextArrowTimer.Restart();
@@ -158,20 +156,18 @@ namespace Graphics.Objects
 		{
 			for (var x = 0; x < Graphic.Width; ++x)
 			for (var y = 0; y < Graphic.Height; ++y)
+			{
+				Graphic.At(x, y).Attributes = 0;
+
 				if (x == 0 || x == Width - 1)
 				{
-					Graphic.At(x, y).Attributes = MsgBoxColor;
-					Graphic.At(x, y).Char.UnicodeChar = '|';
+					Graphic.Set(x, y, MsgBoxColor, '|');
 				}
 				else if (y == 0 || y == Height - 1)
 				{
-					Graphic.At(x, y).Attributes = MsgBoxColor;
-					Graphic.At(x, y).Char.UnicodeChar = '-';
+					Graphic.Set(x, y, MsgBoxColor, '-');
 				}
-				else
-				{
-					Graphic.At(x, y).Attributes = 0;
-				}
+			}
 
 			Graphic.At(0, 0).Char.UnicodeChar = '+';
 			Graphic.At(0, Height - 1).Char.UnicodeChar = '+';

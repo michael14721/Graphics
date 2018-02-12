@@ -4,6 +4,8 @@ namespace Graphics
 {
 	internal abstract class GameObject
 	{
+		private int _renderGraphicPosition;
+
 		public Guid Id { get; } = Guid.NewGuid();
 
 		public int Depth { get; set; } = 0;
@@ -20,7 +22,11 @@ namespace Graphics
 
 		public Graphic Graphic { get; set; }
 
-		public int RenderGraphicPosition { get; set; } = 0;
+		public int RenderGraphicPosition
+		{
+			get => _renderGraphicPosition;
+			set => _renderGraphicPosition = value % Width;
+		}
 
 		public virtual void Step()
 		{
