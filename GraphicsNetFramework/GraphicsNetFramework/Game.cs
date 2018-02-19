@@ -30,11 +30,12 @@ namespace Graphics
 
 		private void Initialize()
 		{
+			_inputHandler = new InputHandler();
 			_sw = Stopwatch.StartNew();
 
 			_cmap = new CollisionMap(_width, _height);
 			var cave = new Cave(_width, _height, _cmap);
-			var msgBox = new MessageBox
+			var msgBox = new MessageBox(_inputHandler)
 			{
 				Depth = -90,
 				X = 2,
@@ -47,7 +48,7 @@ namespace Graphics
 				"Lorem ipsum dolor sit amet, \n consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
 			msgBox.Resize();
 
-			var player = new Player
+			var player = new Player(_inputHandler, _cmap, cave, _width)
 			{
 				X = 3,
 				Y = _height / 2
@@ -59,44 +60,9 @@ namespace Graphics
 			_graphicManager.AddGraphic(msgBox);
 
 			// Keybindings
-			_inputHandler = new InputHandler();
 
 			_inputHandler.AddHandler(Key.Escape, () => Environment.Exit(0));
-
-			_inputHandler.AddHandler(Key.W, () =>
-			{
-				if (_cmap.IsFree(player.X, player.Y - 1))
-					player.Y -= 1;
-			});
-
-			_inputHandler.AddHandler(Key.A, () =>
-			{
-				if (_cmap.IsFree(player.X - 1, player.Y))
-					player.X -= 1;
-			});
-
-			_inputHandler.AddHandler(Key.S, () =>
-			{
-				if (_cmap.IsFree(player.X, player.Y + 1))
-					player.Y += 1;
-			});
-
-			_inputHandler.AddHandler(Key.D, () =>
-			{
-				if (_cmap.IsFree(player.X + 1, player.Y))
-					if (player.X >= _width / 2)
-					{
-						_cmap.ShiftLeft();
-						cave.ExpandOne();
-					}
-					else
-					{
-						player.X += 1;
-					}
-			});
-
-			_inputHandler.AddHandler(Key.J, () => { msgBox.Go(); });
-
+			
 			_graphicManager.UpdateDepth();
 		}
 		

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Windows.Input;
 
 namespace Graphics.Objects
 {
 	internal class MessageBox : GameObject
 	{
+		private readonly InputHandler _inputHandler;
+
 		private const short TextColor = 15;				// Color of the text
 		private const short MsgBoxColor = 5;			// Color of the messagebox
 
@@ -13,6 +16,9 @@ namespace Graphics.Objects
 		private readonly TimeSpan _nextArrowDelay;
 		private readonly Stopwatch _nextArrowTimer;
 		private readonly int _offset;					// Offset from borders of graphic
+
+		private readonly TimeSpan _skipDelay = TimeSpan.FromMilliseconds(200);
+		private readonly Stopwatch _skipStopwatch;
 
 		private readonly TimeSpan _writeDelay;
 		private readonly Stopwatch _writeTimer;
@@ -23,8 +29,12 @@ namespace Graphics.Objects
 		private int _word;                              // Current word to be read
 		private bool _skip;
 
-		public MessageBox()
+		public MessageBox(InputHandler inputHandler)
 		{
+			_skipStopwatch = new Stopwatch();
+			_skipStopwatch.Start();
+
+			_inputHandler = inputHandler;
 			_pos = 0;
 			_word = 0;
 			_renderPos = 0;
@@ -39,6 +49,8 @@ namespace Graphics.Objects
 			_writeTimer = Stopwatch.StartNew();
 
 			_message = new string[0];
+
+			_inputHandler.AddHandler(Key.J, Go);
 		}
 
 		public void Resize()
@@ -107,6 +119,13 @@ namespace Graphics.Objects
 
 		public void Go()
 		{
+			if (_skipStopwatch.Elapsed < _skipDelay)
+			{
+				return;
+			}
+
+			_skipStopwatch.Restart();
+
 			// Already writing to screen
 			if (_writeTimer.IsRunning && _skip == false)
 			{
