@@ -1,4 +1,5 @@
 ﻿using System;
+using GraphicsNetFramework;
 
 namespace Graphics
 {
@@ -8,8 +9,8 @@ namespace Graphics
 		{
 			const int fps = 60;
 
-			var width = (short) (Console.LargestWindowWidth / 3);
-			var height = (short) (Console.LargestWindowHeight / 3);
+			var width = (short)(Console.LargestWindowWidth / 3);
+			var height = (short)(Console.LargestWindowHeight / 3);
 
 			Console.SetWindowSize(width, height);
 			Console.SetBufferSize(width, height);

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows.Input;
 using Graphics.Objects;
+using GraphicsNetFramework;
 
 namespace Graphics
 {
@@ -97,7 +99,7 @@ namespace Graphics
 
 			_graphicManager.UpdateDepth();
 		}
-
+		
 		public void Run()
 		{
 			while (true)
