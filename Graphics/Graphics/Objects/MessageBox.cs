@@ -20,7 +20,8 @@ namespace Graphics.Objects
 		private int _nextArrowState;					// 1 or 0 depending on which state the 'next-arrow' is in (right or left)
 		private int _pos;								// Position inside current word
 		private int _renderPos;							// Position inside Graphic to render the next letter
-		private int _word;								// Current word to be read
+		private int _word;                              // Current word to be read
+		private bool _skip;
 
 		public MessageBox()
 		{
@@ -29,6 +30,7 @@ namespace Graphics.Objects
 			_renderPos = 0;
 			_nextArrowState = 0;
 			_offset = 2;
+			_skip = false;
 
 			_nextArrowDelay = TimeSpan.FromMilliseconds(300);
 			_nextArrowTimer = new Stopwatch();
@@ -47,64 +49,99 @@ namespace Graphics.Objects
 
 		public override void Step()
 		{
-			if (_writeTimer.Elapsed >= _writeDelay && _word < _message.Length && _pos < _message[_word].Length)
+			if (!_skip)
 			{
-				if (_message[_word][0] == WaitForInputChar)
+				if (_writeTimer.Elapsed >= _writeDelay && _word < _message.Length && _pos < _message[_word].Length)
 				{
-					WaitForInput();
-					return;
+					if (_message[_word][0] == WaitForInputChar)
+					{
+						WaitForInput();
+						return;
+					}
+
+					Graphic.Set(_renderPos + _offset, _offset, TextColor, _message[_word][_pos]);
+
+					++_pos;
+					++_renderPos;
+
+					// End of word
+					if (_pos >= _message[_word].Length)
+					{
+						++_word;
+						_pos = 0;
+
+						// End of text
+						if (_word >= _message.Length)
+						{
+							_writeTimer.Reset();
+						}
+						else
+						{
+							// Word wrap
+							if (_renderPos % Width + _message[_word].Length > Width - 5)
+								_renderPos = (_renderPos / Width + 1) * Width;
+							else
+								++_renderPos;
+
+							// Check if line limit has been reached before rendering next letter
+							if (_renderPos / Width > 2)
+								WaitForInput();
+							else
+								_writeTimer.Restart();
+						}
+					}
 				}
 
-				Graphic.Set(_renderPos + _offset, _offset, TextColor, _message[_word][_pos]);
-
-				++_pos;
-				++_renderPos;
-
-				// End of word
-				if (_pos >= _message[_word].Length)
+				// Animate the 'next-arrow'
+				if (_nextArrowTimer.Elapsed >= _nextArrowDelay)
 				{
-					++_word;
-					_pos = 0;
+					_nextArrowState = _nextArrowState == 1 ? 0 : 1;
 
-					// End of text
-					if (_word >= _message.Length)
-					{
-						_writeTimer.Reset();
-					}
-					else
-					{
-						// Word wrap
-						if (_renderPos % Width + _message[_word].Length > Width - 5)
-							_renderPos = (_renderPos / Width + 1) * Width;
-						else
-							++_renderPos;
+					Graphic.Set(Width - _offset + _nextArrowState - 2, Height - _offset, TextColor, 175);
+					Graphic.At(Width - _offset + (1 - _nextArrowState) - 2, Height - _offset).Attributes = 0;
 
-						// Check if line limit has been reached before rendering next letter
-						if (_renderPos / Width > 2)
-							WaitForInput();
-						else
-							_writeTimer.Restart();
-					}
+					_nextArrowTimer.Restart();
 				}
-			}
-
-			// Animate the 'next-arrow'
-			if (_nextArrowTimer.Elapsed >= _nextArrowDelay)
-			{
-				_nextArrowState = _nextArrowState == 1 ? 0 : 1;
-
-				Graphic.Set(Width - _offset + _nextArrowState - 2, Height - _offset, TextColor, 175);
-				Graphic.At(Width - _offset + (1 - _nextArrowState) - 2, Height - _offset).Attributes = 0;
-
-				_nextArrowTimer.Restart();
 			}
 		}
 
 		public void Go()
 		{
 			// Already writing to screen
-			if (_writeTimer.IsRunning)
+			if (_writeTimer.IsRunning && _skip == false)
+			{
+				_skip = true;
+				while (_message[_word][0] != WaitForInputChar && _renderPos / Width <= 2 && _word < _message.Length && _pos < _message[_word].Length)
+				{		
+					Graphic.Set(_renderPos + _offset, _offset, TextColor, _message[_word][_pos]);
+
+					++_pos;
+					++_renderPos;
+
+					// End of word
+					if (_pos >= _message[_word].Length)
+					{
+						++_word;
+						_pos = 0;
+
+						// End of message
+						if (_word >= _message.Length)
+						{
+							break;
+						}
+
+						// Word wrap
+						if (_renderPos % Width + _message[_word].Length > Width - 5)
+							_renderPos = (_renderPos / Width + 1) * Width;
+						else
+							++_renderPos;
+					}
+				}
+
+				WaitForInput();
+				_skip = false;
 				return;
+			}
 
 			// Disappear when end of text is reached
 			if (_word >= _message.Length)
