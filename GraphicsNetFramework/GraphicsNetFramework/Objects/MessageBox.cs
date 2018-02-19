@@ -174,7 +174,7 @@ namespace Graphics.Objects
 
 		public void SetText(string text)
 		{
-			_message = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			_message = text.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
 		}
 
 		public void Restart()
